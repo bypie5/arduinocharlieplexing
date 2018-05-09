@@ -85,22 +85,43 @@ class LED {
     }
 };
 
-LED * leds[4];
-int pins[4] = {4,5,6,7};
+class LEDColumn {
+  public:
+    LEDColumn(int * pinsInUse) {
+      pins = pinsInUse;
+      for (int i = 0; i < 4; i++) {
+        leds[i] = new LED(pins[i]);
+        pinMode(pins[i], INPUT);
+      }  
+    }
+  
+  private:
+    LED * leds[4];
+    int * pins;
 
-void updateLEDs() {
-  for (int i = 0; i < 4; ++i) {
-    leds[i]->draw();
-    leds[i]->setColor(-1);
-  }
-}
+  public:
+    void setLED(int index, int color) {
+      leds[index]->setColor(color);
+    }
+  
+    void updateLEDs() {
+      for (int i = 0; i < 4; ++i) {
+        leds[i]->draw();
+        leds[i]->setColor(-1);
+      }
+    }
 
+    LED** getLEDs() {
+      return leds;
+    }
+    
+};
+
+LEDColumn * ledcolumn;
 void setup() {
   Serial.begin(9600);
-  for (int i = 0; i < 4; i++) {
-    leds[i] = new LED(pins[i]);
-    pinMode(pins[i], INPUT);
-  }
+  int pins[4] = {4,5,6,7};
+  ledcolumn = new LEDColumn(pins);
 }
 
 int color = 0;
@@ -109,8 +130,8 @@ void loop() {
   /*for (int i = 0; i < 4; ++i) {
       // Hold each led on for 250ms
       for (int j = 0; j < 250; ++j) {
-        leds[i]->setColor(color);
-        updateLEDs();
+        ledcolumn->setLED(i, color);
+        ledcolumn->updateLEDs();
         delay(1);
       }
     color = (color + 1)%3;
@@ -118,15 +139,15 @@ void loop() {
   
   // Single color for all LEDs in the column
   /*for (int i = 0; i < 4; ++i) {
-    leds[i]->setColor(0);
-    updateLEDs();
+    ledcolumn->setLED(i, 0);
+    ledcolumn->updateLEDs();
   }*/
 
   // Rainbow
-  leds[0]->setColor(0);
-  leds[1]->setColor(1);
-  leds[2]->setColor(2);
-  leds[3]->setColor(0);
-  updateLEDs();
+  ledcolumn->setLED(0, 0);
+  ledcolumn->setLED(1, 1);
+  ledcolumn->setLED(2, 2);
+  ledcolumn->setLED(3, 0);
+  ledcolumn->updateLEDs();
   
 }
