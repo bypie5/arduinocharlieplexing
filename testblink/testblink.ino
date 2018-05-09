@@ -33,6 +33,11 @@ class LED {
       }    
     }
 
+    void turnOff() {
+      pinMode(id, INPUT);
+      digitalWrite(id, LOW);
+    }
+
   public:
     int getId() {
       return id;
@@ -78,20 +83,15 @@ class LED {
         turnOff();
       }
     }
-
-
-    void turnOff() {
-      pinMode(id, INPUT);
-      digitalWrite(id, LOW);
-    }
 };
 
 LED * leds[4];
 int pins[4] = {4,5,6,7};
 
-void drawLEDs() {
+void updateLEDs() {
   for (int i = 0; i < 4; ++i) {
     leds[i]->draw();
+    leds[i]->setColor(-1);
   }
 }
 
@@ -105,13 +105,28 @@ void setup() {
 
 int color = 0;
 void loop() { 
-  for (int i = 0; i < 4; ++i) {
+  // Alternating colors going up a single column
+  /*for (int i = 0; i < 4; ++i) {
+      // Hold each led on for 250ms
       for (int j = 0; j < 250; ++j) {
-        drawLEDs();
         leds[i]->setColor(color);
+        updateLEDs();
         delay(1);
       }
-    leds[i]->setColor(-1);
     color = (color + 1)%3;
-  }
+  }*/
+  
+  // Single color for all LEDs in the column
+  /*for (int i = 0; i < 4; ++i) {
+    leds[i]->setColor(0);
+    updateLEDs();
+  }*/
+
+  // Rainbow
+  leds[0]->setColor(0);
+  leds[1]->setColor(1);
+  leds[2]->setColor(2);
+  leds[3]->setColor(0);
+  updateLEDs();
+  
 }
