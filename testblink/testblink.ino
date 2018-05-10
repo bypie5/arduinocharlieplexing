@@ -117,15 +117,56 @@ class LEDColumn {
     
 };
 
+// HC-SR04 sonar distance sensor
+class Sensor {
+  public:
+    Sensor(int * pins) {
+      trigger = pins[0];
+      echo = pins[1];
+    
+      pinMode(trigger, OUTPUT);
+      digitalWrite(trigger, LOW);
+      
+      pinMode(echo, INPUT);
+    }
+
+   private:
+    int trigger;
+    int echo;
+
+   public:
+    float getDistance() {
+      digitalWrite(trigger, LOW);
+      delayMicroseconds(2);
+      
+      // 10 microseconds high
+      digitalWrite(trigger, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigger, LOW);
+      
+      long duration = pulseIn(echo, HIGH);
+
+      float distance= duration*0.034/2;
+      
+      return distance;
+    }
+};
+
 LEDColumn * ledcolumn;
+Sensor * sensor;
 void setup() {
   Serial.begin(9600);
-  int pins[4] = {4,5,6,7};
-  ledcolumn = new LEDColumn(pins);
+  int colmunPins[4] = {4,5,6,7};
+  ledcolumn = new LEDColumn(colmunPins);
+
+  int sensorPins[2] = {11,12};
+  sensor = new Sensor(sensorPins);
 }
 
-int color = 0;
+
+// int color = 0;
 void loop() { 
+  Serial.println(sensor->getDistance());  
   // Alternating colors going up a single column
   /*for (int i = 0; i < 4; ++i) {
       // Hold each led on for 250ms
