@@ -147,12 +147,12 @@ class Sensor {
       delayMicroseconds(10);
       digitalWrite(trigger, LOW);
       
-      long duration = pulseIn(echo, HIGH);
+      long duration = pulseIn(echo, HIGH, (2.5*maxDist)/0.034);
 
       int distance = duration*0.034/2;
 
       // Boundary conditions 
-      if (distance > maxDist) {
+      if (distance > maxDist || duration == 0) {
         distance = maxDist;
       } else if (distance < minDist) {
         distance = minDist;
