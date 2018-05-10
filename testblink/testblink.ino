@@ -135,7 +135,10 @@ class Sensor {
     int echo;
 
    public:
-    float getDistance() {
+    float maxDist = 25;
+    float minDist = 3;
+   
+    int getDistance() {
       digitalWrite(trigger, LOW);
       delayMicroseconds(2);
       
@@ -146,7 +149,14 @@ class Sensor {
       
       long duration = pulseIn(echo, HIGH);
 
-      float distance= duration*0.034/2;
+      int distance = duration*0.034/2;
+
+      // Boundary conditions 
+      if (distance > maxDist) {
+        distance = maxDist;
+      } else if (distance < minDist) {
+        distance = minDist;
+      }
       
       return distance;
     }
@@ -166,29 +176,26 @@ void setup() {
 
 // int color = 0;
 void loop() { 
-  Serial.println(sensor->getDistance());  
-  // Alternating colors going up a single column
-  /*for (int i = 0; i < 4; ++i) {
-      // Hold each led on for 250ms
-      for (int j = 0; j < 250; ++j) {
-        ledcolumn->setLED(i, color);
-        ledcolumn->updateLEDs();
-        delay(1);
-      }
-    color = (color + 1)%3;
-  }*/
-  
-  // Single color for all LEDs in the column
-  /*for (int i = 0; i < 4; ++i) {
-    ledcolumn->setLED(i, 0);
-    ledcolumn->updateLEDs();
-  }*/
+  // Closer: low, Farther: high
+  float yPos = sensor->getDistance();
+  float steps = (sensor->maxDist - sensor->minDist)/4;
 
-  // Rainbow
-  ledcolumn->setLED(0, 0);
-  ledcolumn->setLED(1, 1);
-  ledcolumn->setLED(2, 2);
-  ledcolumn->setLED(3, 0);
-  ledcolumn->updateLEDs();
-  
+  // Sample granularity of 50ms
+  for (int i = 0; i < 50; i++) {
+    if ((yPos >= sensor->minDist || yPos >= 0) && yPos < steps) {
+      ledcolumn->setLED(0, 0);
+    } else if (yPos >= steps && yPos < steps*2) {
+      ledcolumn->setLED(1, 0);
+    } else if (yPos >= steps*2 && yPos < steps*3) {
+      ledcolumn->setLED(2, 0);
+    } else if (yPos >= steps*3 && yPos <= sensor->maxDist) {
+      ledcolumn->setLED(3, 0);
+    } else {
+      // Debugging case
+      ledcolumn->setLED(3, 1);
+    }
+    
+    ledcolumn->updateLEDs();
+    delay(1);
+  }
 }
