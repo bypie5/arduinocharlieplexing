@@ -126,18 +126,17 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
-
-  ledcolumn->setLED(0, 0);
-  ledcolumn->updateLEDs();
-  
+void loop() { 
   // send data only when you receive data:
   if (Serial.available() > 0) {
-      // read the incoming byte:
+      // xxxx   xx  xx
+      // column led color
       incomingByte = Serial.read();
-
-      // say what you got:
-      Serial.print("I received: ");
-      Serial.println(incomingByte, DEC);
   }
+
+  //unsigned char colmun
+  unsigned char currLed = (incomingByte >> 2) & 0x03;
+  unsigned char color = incomingByte & 0x03;
+  ledcolumn->setLED(currLed, 2);
+  ledcolumn->updateLEDs();
 }
