@@ -205,12 +205,9 @@ void loop() {
       incomingByte = Serial.read();
   }
 
-  //unsigned char colmun
+  unsigned char colmun = incomingByte >> 4;
   unsigned char currLed = (incomingByte >> 2) & 0x03;
   unsigned char color = incomingByte & 0x03;
-
-  matrix->draw(0, 0, 0);
-  matrix->draw(1, 1, 1);
-  matrix->draw(2, 2, 2);
-  matrix->draw(3, 3, 0);
+  
+  matrix->draw(colmun, currLed, color);
 }
