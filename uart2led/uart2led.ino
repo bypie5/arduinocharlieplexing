@@ -203,6 +203,7 @@ void loop() {
       // xxxx   xx  xx
       // column led color
       incomingByte = Serial.read();
+      Serial.println(incomingByte);
   }
 
   unsigned char colmun = incomingByte >> 4;
