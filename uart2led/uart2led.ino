@@ -1,3 +1,4 @@
+#include <QueueArray.h>
 // Red, Anode, Blue, Green
 class LED {
   public:
@@ -179,8 +180,9 @@ public:
   }
 };
 
-int incomingByte = 0;
+unsigned char incomingByte = 0;
 LEDMatrix * matrix;
+QueueArray<unsigned char> bytes;
 void setup() {
   int colmunPins_0[4] = {4,5,6,7};
   int colmunPins_1[4] = {8,9,10,11};
@@ -198,17 +200,11 @@ void setup() {
 }
 
 void loop() { 
-  // send data only when you receive data:
-  if (Serial.available() > 0) {
-      // xxxx   xx  xx
-      // column led color
-      incomingByte = Serial.read();
-      Serial.println(incomingByte);
-  }
 
-  unsigned char colmun = incomingByte >> 4;
-  unsigned char currLed = (incomingByte >> 2) & 0x03;
-  unsigned char color = incomingByte & 0x03;
-  
-  matrix->draw(colmun, currLed, color);
+  if (Serial.available() > 0) {
+      incomingByte = Serial.read();
+  }
+    
+  matrix->draw((incomingByte >> 2) & 0x03, incomingByte & 0x03, 1);
+  matrix->draw((incomingByte >> 6) & 0x03, (incomingByte >> 4) & 0x03, 2);
 }
