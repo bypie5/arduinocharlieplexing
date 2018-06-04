@@ -157,6 +157,8 @@ class Sensor {
       } else if (distance < minDist) {
         distance = minDist;
       }
+
+      Serial.println(distance);
       
       return distance;
     }
